@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,6 +7,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NLog.Web;
 
 namespace Terakoya
 {
@@ -19,6 +20,15 @@ namespace Terakoya
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .ConfigureLogging((context, logBuilder) =>
+                {
+                    var env = context.HostingEnvironment;
+                    if (env.IsDevelopment())
+                        env.ConfigureNLog($"nlog.{env.EnvironmentName}.config");
+                    logBuilder.ClearProviders();
+                    logBuilder.SetMinimumLevel(LogLevel.Trace);
+                })
+                .UseNLog()
                 .UseStartup<Startup>();
     }
 }
