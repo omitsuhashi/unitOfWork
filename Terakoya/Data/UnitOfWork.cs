@@ -1,19 +1,23 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Terakoya.Data.Repositories;
 using Terakoya.Data.Repositories.Interfaces;
+using Terakoya.Models;
 
 namespace Terakoya.Data
 {
     public interface IUnitOfWork : IDisposable
     {
-        IRepository<TEntity> GetRepository<TEntity>() where TEntity : class;
-        IReadRepository<TEntity> GetReadOnlyRepository<TEntity>() where TEntity : class;
+        IRepository<TEntity> GetRepository<TEntity>() where TEntity : ModelBase;
+        IReadRepository<TEntity> GetReadOnlyRepository<TEntity>() where TEntity : ModelBase;
 
-        int SaveChanges();
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 
     public interface IUnitOfWork<TContext> : IUnitOfWork where TContext : DbContext
@@ -25,22 +29,26 @@ namespace Terakoya.Data
         where TContext : DbContext, IDisposable
     {
         private Dictionary<Type, object> _repositories;
+        private readonly HttpContext httpContent;
 
-        public UnitOfWork(TContext context)
+        public UnitOfWork(
+            TContext context,
+            IHttpContextAccessor httpContextAccessor)
         {
             Context = context ?? throw new ArgumentNullException(nameof(context));
+            httpContent = httpContextAccessor.HttpContext;
         }
 
-        public IRepository<TEntity> GetRepository<TEntity>() where TEntity : class
+        public IRepository<TEntity> GetRepository<TEntity>() where TEntity : ModelBase
         {
             if (_repositories == null) _repositories = new Dictionary<Type, object>();
 
             var type = typeof(TEntity);
-            if (!_repositories.ContainsKey(type)) _repositories[type] = new Repository<TEntity>(Context);
+            if (!_repositories.ContainsKey(type)) _repositories[type] = new Repository<TEntity>(Context, httpContent);
             return (IRepository<TEntity>)_repositories[type];
         }
 
-        public IReadRepository<TEntity> GetReadOnlyRepository<TEntity>() where TEntity : class
+        public IReadRepository<TEntity> GetReadOnlyRepository<TEntity>() where TEntity : ModelBase
         {
             if (_repositories == null) _repositories = new Dictionary<Type, object>();
 
@@ -51,9 +59,9 @@ namespace Terakoya.Data
 
         public TContext Context { get; }
 
-        public int SaveChanges()
+        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Context.SaveChanges();
+            return await Context.SaveChangesAsync(cancellationToken);
         }
 
         public void Dispose()

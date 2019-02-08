@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 using AutoMapper;
 using Terakoya.Data;
+using Microsoft.AspNetCore.Http;
 
 namespace Terakoya
 {
@@ -29,6 +30,7 @@ namespace Terakoya
                 config.AddProfile<ApplicationProfile>();
             });
             services.AddSingleton<IMapper, Mapper>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 
             services.AddDbContext<ApplicationDbContext>(options =>

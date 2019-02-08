@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Terakoya.Models
 {
-    public class ProjectModel : BaseModel<string>
+    public class ProjectModel : ModelBase
     {
         public string Name { get; set; }
         public string Description { get; set; }

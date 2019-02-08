@@ -7,10 +7,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Terakoya.Data.Paging;
 using Terakoya.Data.Repositories.Interfaces;
+using Terakoya.Models;
 
 namespace Terakoya.Data.Repositories
 {
-    public abstract class BaseRepository<T> : IReadRepository<T> where T : class
+    public abstract class BaseRepository<T> : IReadRepository<T> where T : ModelBase
     {
         protected readonly DbContext _dbContext;
         protected readonly DbSet<T> _dbSet;

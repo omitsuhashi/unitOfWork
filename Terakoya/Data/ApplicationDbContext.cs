@@ -8,7 +8,7 @@ using Terakoya.Models;
 
 namespace Terakoya.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<ProjectModel> Projects { get; set; }
 

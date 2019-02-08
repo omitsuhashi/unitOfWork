@@ -6,10 +6,11 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Terakoya.Data.Paging;
+using Terakoya.Models;
 
 namespace Terakoya.Data.Repositories.Interfaces
 {
-    public interface IRepository<T> : IReadRepository<T>, IDisposable where T : class
+    public interface IRepository<T> : IReadRepository<T>, IDisposable where T : ModelBase
     {
         IQueryable<T> Query(string sql, params object[] parameters);
 
