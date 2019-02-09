@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Terakoya.Data.Repositories;
@@ -29,14 +30,14 @@ namespace Terakoya.Data
         where TContext : DbContext, IDisposable
     {
         private Dictionary<Type, object> _repositories;
-        private readonly HttpContext httpContent;
+        private readonly string _userId;
 
         public UnitOfWork(
             TContext context,
             IHttpContextAccessor httpContextAccessor)
         {
             Context = context ?? throw new ArgumentNullException(nameof(context));
-            httpContent = httpContextAccessor.HttpContext;
+            _userId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value ?? throw new UnauthorizedAccessException();
         }
 
         public IRepository<TEntity> GetRepository<TEntity>() where TEntity : ModelBase
@@ -44,7 +45,7 @@ namespace Terakoya.Data
             if (_repositories == null) _repositories = new Dictionary<Type, object>();
 
             var type = typeof(TEntity);
-            if (!_repositories.ContainsKey(type)) _repositories[type] = new Repository<TEntity>(Context, httpContent);
+            if (!_repositories.ContainsKey(type)) _repositories[type] = new Repository<TEntity>(Context, _userId);
             return (IRepository<TEntity>)_repositories[type];
         }
 

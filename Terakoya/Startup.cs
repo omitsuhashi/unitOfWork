@@ -32,7 +32,6 @@ namespace Terakoya
             services.AddSingleton<IMapper, Mapper>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseSqlServer(

@@ -17,9 +17,9 @@ namespace Terakoya.Data.Repositories
     {
         private readonly string _userId;
 
-        public Repository(DbContext context, HttpContext httpContext) : base(context)
+        public Repository(DbContext context, string userId) : base(context)
         {
-            _userId = httpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            _userId = userId;
         }
 
         public virtual IQueryable<T> Query(string sql, params object[] parameters) => _dbSet.FromSql(sql, parameters);

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Terakoya.Data.Migrations
 {
-    public partial class Initialize : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -40,7 +40,8 @@ namespace Terakoya.Data.Migrations
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false)
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    Points = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -159,9 +160,9 @@ namespace Terakoya.Data.Migrations
                 {
                     Id = table.Column<string>(nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false),
-                    CreatedById = table.Column<string>(nullable: true),
                     UpdatedAt = table.Column<DateTime>(nullable: false),
-                    UpdatedById = table.Column<string>(nullable: true),
+                    CreatedBy = table.Column<string>(nullable: true),
+                    UpdatedBy = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true)
                 },
@@ -169,14 +170,14 @@ namespace Terakoya.Data.Migrations
                 {
                     table.PrimaryKey("PK_Projects", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Projects_AspNetUsers_CreatedById",
-                        column: x => x.CreatedById,
+                        name: "FK_Projects_AspNetUsers_CreatedBy",
+                        column: x => x.CreatedBy,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Projects_AspNetUsers_UpdatedById",
-                        column: x => x.UpdatedById,
+                        name: "FK_Projects_AspNetUsers_UpdatedBy",
+                        column: x => x.UpdatedBy,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -222,14 +223,14 @@ namespace Terakoya.Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Projects_CreatedById",
+                name: "IX_Projects_CreatedBy",
                 table: "Projects",
-                column: "CreatedById");
+                column: "CreatedBy");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Projects_UpdatedById",
+                name: "IX_Projects_UpdatedBy",
                 table: "Projects",
-                column: "UpdatedById");
+                column: "UpdatedBy");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
